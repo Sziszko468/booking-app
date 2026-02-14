@@ -1,8 +1,10 @@
+import AdminLayout from "@/components/layout/AdminLayout";
+
 export default function DashboardPage() {
   return (
-    <div style={{ padding: "40px" }}>
+    <AdminLayout>
       <h2>Dashboard</h2>
       <p>Overview of appointments</p>
-    </div>
+    </AdminLayout>
   );
 }

@@ -1,8 +1,10 @@
-export default function AppointmentsPage() {
+import AdminLayout from "@/components/layout/AdminLayout";
+
+export default function DashboardPage() {
   return (
-    <div style={{ padding: "40px" }}>
-      <h2>Appointments</h2>
-      <p>List of bookings will appear here</p>
-    </div>
+    <AdminLayout>
+      <h2>Dashboard</h2>
+      <p>Overview of appointments</p>
+    </AdminLayout>
   );
 }

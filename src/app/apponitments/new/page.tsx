@@ -1,8 +1,10 @@
-export default function NewAppointmentPage() {
+import AdminLayout from "@/components/layout/AdminLayout";
+
+export default function DashboardPage() {
   return (
-    <div style={{ padding: "40px" }}>
-      <h2>New Appointment</h2>
-      <p>Create a new booking</p>
-    </div>
+    <AdminLayout>
+      <h2>Dashboard</h2>
+      <p>Overview of appointments</p>
+    </AdminLayout>
   );
 }
