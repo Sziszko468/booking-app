@@ -24,12 +24,12 @@ export default function Sidebar() {
       icon: <LayoutDashboard size={20} />
     },
     { 
-      href: "/apponitments", 
+      href: "/appointments", 
       label: "Appointments",
       icon: <Calendar size={20} />
     },
     { 
-      href: "/apponitments/new", 
+      href: "/appointments/new", 
       label: "New Booking",
       icon: <Plus size={20} />
     },
