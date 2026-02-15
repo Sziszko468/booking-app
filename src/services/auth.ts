@@ -1,7 +1,9 @@
 export const login = async (email: string, password: string) => {
   // Fake validation
   if (email === "admin@test.com" && password === "123456") {
-    localStorage.setItem("token", "fake-jwt-token");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", "fake-jwt-token");
+    }
     return true;
   }
 
@@ -9,7 +11,9 @@ export const login = async (email: string, password: string) => {
 };
 
 export const logout = () => {
-  localStorage.removeItem("token");
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+  }
 };
 
 export const isAuthenticated = () => {

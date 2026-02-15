@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isAuthenticated } from "@/services/auth";
 
@@ -10,14 +10,24 @@ interface Props {
 
 export default function ProtectedRoute({ children }: Props) {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      router.replace("/login");
-    }
+    const checkAuth = () => {
+      if (!isAuthenticated()) {
+        router.replace("/login");
+      } else {
+        setIsChecking(false);
+      }
+    };
+
+    checkAuth();
   }, [router]);
 
-  if (!isAuthenticated()) return null;
+  // Show nothing while checking auth
+  if (isChecking) {
+    return null;
+  }
 
   return <>{children}</>;
 }

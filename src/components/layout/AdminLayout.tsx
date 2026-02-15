@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import styles from "./AdminLayout.module.scss";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
@@ -11,11 +10,13 @@ interface Props {
 
 export default function AdminLayout({ children }: Props) {
   return (
-    <div className={styles.container}>
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      <div className={styles.main}>
+      <div className="flex-1 flex flex-col">
         <Header />
-        <div className={styles.content}>{children}</div>
+        <main className="flex-1 p-8">
+          {children}
+        </main>
       </div>
     </div>
   );
