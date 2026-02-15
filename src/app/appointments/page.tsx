@@ -1,15 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { initialAppointments } from "@/data/appointments";
 import { Appointment } from "@/types/appointment";
-import { Trash2, Calendar, Clock, User, Mail, Briefcase } from "lucide-react";
+import { Trash2, Calendar, Clock, User, Mail, Briefcase, Plus } from "lucide-react";
+
+const STORAGE_KEY = "appointments";
 
 export default function AppointmentsPage() {
-  const [appointments, setAppointments] =
-    useState<Appointment[]>(initialAppointments);
+  const router = useRouter();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load appointments from localStorage
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadAppointments = () => {
+      if (typeof window !== "undefined" && isMounted) {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          setAppointments(JSON.parse(stored));
+        } else {
+          // First time, use initial data
+          setAppointments(initialAppointments);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initialAppointments));
+        }
+        setLoading(false);
+      }
+    };
+
+    loadAppointments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleDelete = (id: string) => {
     const confirmed = window.confirm(
@@ -18,15 +47,38 @@ export default function AppointmentsPage() {
 
     if (!confirmed) return;
 
-    setAppointments((prev) => prev.filter((a) => a.id !== id));
+    const updated = appointments.filter((a) => a.id !== id);
+    setAppointments(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
+
+  if (loading) {
+    return (
+      <ProtectedRoute>
+        <AdminLayout>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </AdminLayout>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
       <AdminLayout>
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">Appointments</h2>
-          <p className="text-gray-600 mt-1">Manage all your scheduled appointments</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">Appointments</h2>
+            <p className="text-gray-600 mt-1">Manage all your scheduled appointments</p>
+          </div>
+          <button
+            onClick={() => router.push("/appointments/new")}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Plus size={20} />
+            New Appointment
+          </button>
         </div>
 
         {appointments.length === 0 ? (
@@ -38,7 +90,11 @@ export default function AppointmentsPage() {
             <p className="text-gray-600 mb-6">
               Get started by creating your first appointment
             </p>
-            <button className="btn-primary">
+            <button
+              onClick={() => router.push("/appointments/new")}
+              className="btn-primary inline-flex items-center gap-2"
+            >
+              <Plus size={20} />
               Create Appointment
             </button>
           </div>
