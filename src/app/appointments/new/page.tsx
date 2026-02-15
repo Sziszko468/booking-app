@@ -4,27 +4,39 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { useAppointments } from "@/hooks/useAppointments";
 import { 
   User, 
   Mail, 
   Calendar, 
   Clock, 
   Briefcase, 
-  Save,
-  AlertCircle,
-  CheckCircle
+  Save, 
+  X, 
+  CheckCircle, 
+  AlertCircle 
 } from "lucide-react";
+
+const services = [
+  "Consultation",
+  "Follow-up",
+  "Treatment",
+  "Check-up",
+  "Therapy Session",
+  "Assessment",
+];
 
 export default function NewAppointmentPage() {
   const router = useRouter();
+  const { createAppointment } = useAppointments();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError(null);
 
     const formData = new FormData(e.currentTarget);
     const appointmentData = {
@@ -43,38 +55,25 @@ export default function NewAppointmentPage() {
     }
 
     try {
-      // Save to localStorage
-      const appointments = JSON.parse(localStorage.getItem("appointments") || "[]");
-      const newAppointment = {
-        id: Date.now().toString(),
-        ...appointmentData,
-      };
-      
-      appointments.push(newAppointment);
-      localStorage.setItem("appointments", JSON.stringify(appointments));
+      const result = await createAppointment(appointmentData);
 
-      // Success
-      setSuccess(true);
-      setLoading(false);
+      if (result.success) {
+        setSuccess(true);
+        setLoading(false);
 
-      // Redirect after 1.5 seconds
-      setTimeout(() => {
-        router.push("/appointments");
-      }, 1500);
+        // Redirect after 1.5 seconds
+        setTimeout(() => {
+          router.push("/appointments");
+        }, 1500);
+      } else {
+        setError(result.error || "Failed to create appointment");
+        setLoading(false);
+      }
     } catch {
-      setError("Failed to create appointment. Please try again.");
+      setError("An unexpected error occurred");
       setLoading(false);
     }
   };
-
-  const services = [
-    "Consultation",
-    "Follow-up",
-    "Treatment",
-    "Check-up",
-    "Therapy Session",
-    "Assessment",
-  ];
 
   if (success) {
     return (
@@ -82,16 +81,11 @@ export default function NewAppointmentPage() {
         <AdminLayout>
           <div className="max-w-2xl mx-auto">
             <div className="card text-center py-12">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="text-green-600" size={32} />
-              </div>
+              <CheckCircle className="mx-auto text-green-600 mb-4" size={64} />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Appointment Created!
+                Appointment Created Successfully!
               </h2>
-              <p className="text-gray-600 mb-4">
-                The appointment has been successfully scheduled.
-              </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-gray-600">
                 Redirecting to appointments list...
               </p>
             </div>
@@ -101,146 +95,176 @@ export default function NewAppointmentPage() {
     );
   }
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <ProtectedRoute>
       <AdminLayout>
         <div className="max-w-2xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-6">
             <h2 className="text-3xl font-bold text-gray-900">New Appointment</h2>
             <p className="text-gray-600 mt-1">Schedule a new appointment for a client</p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="card space-y-6">
-            {/* Client Name */}
-            <div>
-              <label className="label">
-                <User size={16} className="inline mr-2" />
-                Client Name
-              </label>
-              <input
-                name="name"
-                type="text"
-                required
-                placeholder="Enter client's full name"
-                className="input"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="label">
-                <Mail size={16} className="inline mr-2" />
-                Email Address
-              </label>
-              <input
-                name="email"
-                type="email"
-                required
-                placeholder="client@example.com"
-                className="input"
-              />
-            </div>
-
-            {/* Date & Time Row */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Date */}
+          {/* Form Card */}
+          <div className="card">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Client Name */}
               <div>
-                <label className="label">
-                  <Calendar size={16} className="inline mr-2" />
-                  Date
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <User size={16} />
+                    Client Name
+                  </div>
                 </label>
                 <input
-                  name="date"
-                  type="date"
+                  type="text"
+                  id="name"
+                  name="name"
                   required
-                  min={new Date().toISOString().split('T')[0]}
-                  className="input"
+                  className="input-field"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Mail size={16} />
+                    Email Address
+                  </div>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="input-field"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              {/* Date */}
+              <div>
+                <label
+                  htmlFor="date"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Calendar size={16} />
+                    Date
+                  </div>
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  min={today}
+                  required
+                  className="input-field"
                 />
               </div>
 
               {/* Time */}
               <div>
-                <label className="label">
-                  <Clock size={16} className="inline mr-2" />
-                  Time
+                <label
+                  htmlFor="time"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} />
+                    Time
+                  </div>
                 </label>
                 <input
-                  name="time"
                   type="time"
+                  id="time"
+                  name="time"
                   required
-                  className="input"
+                  className="input-field"
                 />
               </div>
-            </div>
 
-            {/* Service */}
-            <div>
-              <label className="label">
-                <Briefcase size={16} className="inline mr-2" />
-                Service Type
-              </label>
-              <select
-                name="service"
-                required
-                className="input"
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  Select a service
-                </option>
-                {services.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Error message */}
-            {error && (
-              <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                <AlertCircle size={20} />
-                <span>{error}</span>
+              {/* Service Type */}
+              <div>
+                <label
+                  htmlFor="service"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Briefcase size={16} />
+                    Service Type
+                  </div>
+                </label>
+                <select
+                  id="service"
+                  name="service"
+                  required
+                  className="input-field"
+                >
+                  {services.map((service) => (
+                    <option key={service} value={service}>
+                      {service}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
 
-            {/* Buttons */}
-            <div className="flex gap-4 pt-4 border-t border-gray-200">
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary flex-1 py-3 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Save size={20} />
-                    Create Appointment
-                  </>
-                )}
-              </button>
+              {/* Error Message */}
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-800">Error</p>
+                    <p className="text-sm text-red-700 mt-1">{error}</p>
+                  </div>
+                </div>
+              )}
 
-              <button
-                type="button"
-                onClick={() => router.back()}
-                disabled={loading}
-                className="btn-secondary px-8 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-4 pt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary flex items-center gap-2 flex-1"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      Create Appointment
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.back()}
+                  disabled={loading}
+                  className="btn-secondary flex items-center gap-2"
+                >
+                  <X size={18} />
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
 
-          {/* Helper text */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-lg">
-            <p className="text-sm text-blue-900">
-              <strong>Note:</strong> The client will receive a confirmation email after the appointment is created.
+          {/* Info Notice */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> An email notification will be sent to the client upon creating the appointment.
             </p>
           </div>
         </div>

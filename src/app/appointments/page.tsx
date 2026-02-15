@@ -1,55 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { initialAppointments } from "@/data/appointments";
-import { Appointment } from "@/types/appointment";
+import { useAppointments } from "@/hooks/useAppointments";
 import { Trash2, Calendar, Clock, User, Mail, Briefcase, Plus } from "lucide-react";
-
-const STORAGE_KEY = "appointments";
 
 export default function AppointmentsPage() {
   const router = useRouter();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { appointments, loading, deleteAppointment } = useAppointments();
 
-  // Load appointments from localStorage
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadAppointments = () => {
-      if (typeof window !== "undefined" && isMounted) {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          setAppointments(JSON.parse(stored));
-        } else {
-          // First time, use initial data
-          setAppointments(initialAppointments);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(initialAppointments));
-        }
-        setLoading(false);
-      }
-    };
-
-    loadAppointments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string): Promise<void> => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this appointment?"
     );
 
     if (!confirmed) return;
 
-    const updated = appointments.filter((a) => a.id !== id);
-    setAppointments(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const result = await deleteAppointment(id);
+    
+    if (!result.success) {
+      alert(result.error || "Failed to delete appointment");
+    }
   };
 
   if (loading) {
