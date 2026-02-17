@@ -1,21 +1,19 @@
-import "../styles/globals.scss";
-import type { ReactNode } from "react";
+import type { Metadata } from "next";
+import "@/styles/globals.css";
 
-export const metadata = {
-  title: "Booking Admin",
-  description: "Appointment booking dashboard"
+export const metadata: Metadata = {
+  title: "Appointment Booking System",
+  description: "Manage your appointments efficiently",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
