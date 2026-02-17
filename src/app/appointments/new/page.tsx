@@ -5,25 +5,14 @@ import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useAppointments } from "@/hooks/useAppointments";
-import { 
-  User, 
-  Mail, 
-  Calendar, 
-  Clock, 
-  Briefcase, 
-  Save, 
-  X, 
-  CheckCircle, 
-  AlertCircle 
+import {
+  User, Mail, Calendar, Clock, Briefcase,
+  CheckCircle, AlertCircle, ArrowLeft,
 } from "lucide-react";
 
 const services = [
-  "Consultation",
-  "Follow-up",
-  "Treatment",
-  "Check-up",
-  "Therapy Session",
-  "Assessment",
+  "Consultation", "Follow-up", "Treatment",
+  "Check-up", "Therapy Session", "Assessment",
 ];
 
 export default function NewAppointmentPage() {
@@ -38,56 +27,59 @@ export default function NewAppointmentPage() {
     setLoading(true);
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
-    const appointmentData = {
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      date: formData.get("date") as string,
-      time: formData.get("time") as string,
-      service: formData.get("service") as string,
+    const fd = new FormData(e.currentTarget);
+    const data = {
+      name:    fd.get("name") as string,
+      email:   fd.get("email") as string,
+      date:    fd.get("date") as string,
+      time:    fd.get("time") as string,
+      service: fd.get("service") as string,
     };
 
-    // Validation
-    if (!appointmentData.name || !appointmentData.email || !appointmentData.date || !appointmentData.time || !appointmentData.service) {
+    if (!data.name || !data.email || !data.date || !data.time || !data.service) {
       setError("Please fill in all fields");
       setLoading(false);
       return;
     }
 
-    try {
-      const result = await createAppointment(appointmentData);
+    const result = await createAppointment(data);
 
-      if (result.success) {
-        setSuccess(true);
-        setLoading(false);
-
-        // Redirect after 1.5 seconds
-        setTimeout(() => {
-          router.push("/appointments");
-        }, 1500);
-      } else {
-        setError(result.error || "Failed to create appointment");
-        setLoading(false);
-      }
-    } catch {
-      setError("An unexpected error occurred");
+    if (result.success) {
+      setSuccess(true);
+      setTimeout(() => router.push("/appointments"), 1500);
+    } else {
+      setError(result.error || "Failed to create appointment");
       setLoading(false);
     }
   };
+
+  const today = new Date().toISOString().split("T")[0];
 
   if (success) {
     return (
       <ProtectedRoute>
         <AdminLayout>
-          <div className="max-w-2xl mx-auto">
-            <div className="card text-center py-12">
-              <CheckCircle className="mx-auto text-green-600 mb-4" size={64} />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Appointment Created Successfully!
-              </h2>
-              <p className="text-gray-600">
-                Redirecting to appointments list...
-              </p>
+          <div style={{ maxWidth: "480px", textAlign: "center", margin: "60px auto 0" }}>
+            <div
+              style={{
+                width: "52px",
+                height: "52px",
+                borderRadius: "50%",
+                background: "rgba(34,197,94,0.1)",
+                border: "1px solid rgba(34,197,94,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px",
+              }}
+            >
+              <CheckCircle size={24} color="#4ade80" />
+            </div>
+            <div style={{ fontSize: "16px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "6px" }}>
+              Booking created!
+            </div>
+            <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
+              Redirecting to appointments…
             </div>
           </div>
         </AdminLayout>
@@ -95,179 +87,174 @@ export default function NewAppointmentPage() {
     );
   }
 
-  const today = new Date().toISOString().split("T")[0];
-
   return (
     <ProtectedRoute>
       <AdminLayout>
-        <div className="max-w-2xl mx-auto">
+        <div style={{ maxWidth: "520px" }}>
+
           {/* Header */}
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-gray-900">New Appointment</h2>
-            <p className="text-gray-600 mt-1">Schedule a new appointment for a client</p>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+            <button
+              onClick={() => router.back()}
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                border: "1px solid var(--border)",
+                background: "transparent",
+                color: "var(--text-secondary)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                transition: "all 0.12s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--bg-card)";
+                e.currentTarget.style.color = "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--text-secondary)";
+              }}
+            >
+              <ArrowLeft size={14} />
+            </button>
+            <div>
+              <div style={{ fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+                New Booking
+              </div>
+              <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                Schedule an appointment
+              </div>
+            </div>
           </div>
 
-          {/* Form Card */}
-          <div className="card">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Client Name */}
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <User size={16} />
-                    Client Name
-                  </div>
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  className="input-field"
-                  placeholder="John Doe"
-                />
-              </div>
+          {/* Form */}
+          <div
+            style={{
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
+              borderRadius: "12px",
+              padding: "20px",
+            }}
+          >
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-              {/* Email */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <Mail size={16} />
-                    Email Address
+              {[
+                { label: "Client name", name: "name", type: "text", icon: User, placeholder: "Jane Doe" },
+                { label: "Email address", name: "email", type: "email", icon: Mail, placeholder: "jane@example.com" },
+              ].map(({ label, name, type, icon: Icon, placeholder }) => (
+                <div key={name}>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                    {label}
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <Icon size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)", pointerEvents: "none" }} />
+                    <input
+                      name={name}
+                      type={type}
+                      required
+                      className="input-field"
+                      style={{ paddingLeft: "34px" }}
+                      placeholder={placeholder}
+                    />
                   </div>
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  className="input-field"
-                  placeholder="john@example.com"
-                />
-              </div>
+                </div>
+              ))}
 
-              {/* Date */}
-              <div>
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <Calendar size={16} />
+              {/* Date + Time row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
                     Date
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <Calendar size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)", pointerEvents: "none" }} />
+                    <input
+                      name="date"
+                      type="date"
+                      required
+                      min={today}
+                      className="input-field"
+                      style={{ paddingLeft: "34px" }}
+                    />
                   </div>
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  min={today}
-                  required
-                  className="input-field"
-                />
-              </div>
-
-              {/* Time */}
-              <div>
-                <label
-                  htmlFor="time"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
                     Time
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <Clock size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)", pointerEvents: "none" }} />
+                    <input
+                      name="time"
+                      type="time"
+                      required
+                      className="input-field"
+                      style={{ paddingLeft: "34px" }}
+                    />
                   </div>
-                </label>
-                <input
-                  type="time"
-                  id="time"
-                  name="time"
-                  required
-                  className="input-field"
-                />
+                </div>
               </div>
 
-              {/* Service Type */}
+              {/* Service */}
               <div>
-                <label
-                  htmlFor="service"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <Briefcase size={16} />
-                    Service Type
-                  </div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                  Service type
                 </label>
-                <select
-                  id="service"
-                  name="service"
-                  required
-                  className="input-field"
-                >
-                  {services.map((service) => (
-                    <option key={service} value={service}>
-                      {service}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ position: "relative" }}>
+                  <Briefcase size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)", pointerEvents: "none" }} />
+                  <select
+                    name="service"
+                    required
+                    className="input-field"
+                    style={{ paddingLeft: "34px" }}
+                  >
+                    {services.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              {/* Error Message */}
+              {/* Error */}
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                  <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800">Error</p>
-                    <p className="text-sm text-red-700 mt-1">{error}</p>
-                  </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderRadius: "8px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.18)", fontSize: "12px", color: "#f87171" }}>
+                  <AlertCircle size={13} />
+                  {error}
                 </div>
               )}
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-4 pt-4">
+              {/* Divider */}
+              <div className="divider" />
+
+              {/* Actions */}
+              <div style={{ display: "flex", gap: "8px" }}>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary flex items-center gap-2 flex-1"
+                  className="btn-primary"
+                  style={{ flex: 1 }}
                 >
                   {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Save size={18} />
-                      Create Appointment
-                    </>
-                  )}
+                    <div style={{ width: "14px", height: "14px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                  ) : "Create Booking"}
                 </button>
                 <button
                   type="button"
                   onClick={() => router.back()}
                   disabled={loading}
-                  className="btn-secondary flex items-center gap-2"
+                  className="btn-secondary"
                 >
-                  <X size={18} />
                   Cancel
                 </button>
               </div>
             </form>
           </div>
-
-          {/* Info Notice */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> An email notification will be sent to the client upon creating the appointment.
-            </p>
-          </div>
         </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
     </ProtectedRoute>
   );

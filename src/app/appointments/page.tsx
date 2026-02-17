@@ -1,35 +1,213 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useAppointments } from "@/hooks/useAppointments";
-import { Trash2, Calendar, Clock, User, Mail, Briefcase, Plus } from "lucide-react";
+import { Trash2, Calendar, Plus, Search, Filter } from "lucide-react";
+import { Appointment } from "@/types/appointment";
+
+const serviceColors: Record<string, string> = {
+  "Consultation":     "#5b7cf6",
+  "Follow-up":        "#a78bfa",
+  "Treatment":        "#22c55e",
+  "Check-up":         "#f59e0b",
+  "Therapy Session":  "#ec4899",
+  "Assessment":       "#06b6d4",
+};
+
+function AppointmentCard({
+  appointment,
+  onDelete,
+}: {
+  appointment: Appointment;
+  onDelete: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const initials = appointment.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const color = serviceColors[appointment.service] ?? "#5b7cf6";
+  const date = new Date(appointment.date);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Delete this appointment?")) return;
+    setDeleting(true);
+    onDelete();
+  };
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: "14px 16px",
+        borderRadius: "10px",
+        background: hovered ? "var(--bg-card-hover)" : "var(--bg-card)",
+        border: `1px solid ${hovered ? "var(--border-strong)" : "var(--border)"}`,
+        transition: "all 0.12s",
+        display: "flex",
+        alignItems: "center",
+        gap: "14px",
+        opacity: deleting ? 0.4 : 1,
+      }}
+    >
+      {/* Avatar */}
+      <div
+        style={{
+          width: "38px",
+          height: "38px",
+          borderRadius: "9px",
+          background: `linear-gradient(135deg, ${color}cc, ${color}66)`,
+          border: `1px solid ${color}33`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "12px",
+          fontWeight: 600,
+          color: "#fff",
+          flexShrink: 0,
+          letterSpacing: "0.02em",
+        }}
+      >
+        {initials}
+      </div>
+
+      {/* Name + email */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "var(--text-primary)",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {appointment.name}
+        </div>
+        <div
+          style={{
+            fontSize: "11px",
+            color: "var(--text-secondary)",
+            marginTop: "2px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {appointment.email}
+        </div>
+      </div>
+
+      {/* Date */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0",
+          padding: "6px 10px",
+          borderRadius: "8px",
+          background: "var(--bg-secondary)",
+          border: "1px solid var(--border)",
+          flexShrink: 0,
+          minWidth: "64px",
+        }}
+      >
+        <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          {date.toLocaleDateString("en-US", { month: "short" })}
+        </span>
+        <span
+          className="stat-value"
+          style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.1 }}
+        >
+          {date.getDate()}
+        </span>
+        <span style={{ fontSize: "10px", color: "var(--text-secondary)" }}>
+          {appointment.time}
+        </span>
+      </div>
+
+      {/* Service badge */}
+      <span
+        style={{
+          fontSize: "11px",
+          padding: "3px 10px",
+          borderRadius: "20px",
+          background: `${color}14`,
+          border: `1px solid ${color}28`,
+          color: color,
+          fontWeight: 500,
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}
+      >
+        {appointment.service}
+      </span>
+
+      {/* Delete */}
+      <button
+        onClick={handleDelete}
+        style={{
+          width: "30px",
+          height: "30px",
+          borderRadius: "7px",
+          border: "1px solid transparent",
+          background: "transparent",
+          color: "var(--text-tertiary)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.12s",
+          flexShrink: 0,
+          opacity: hovered ? 1 : 0,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+          e.currentTarget.style.color = "#f87171";
+          e.currentTarget.style.borderColor = "rgba(239,68,68,0.18)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "var(--text-tertiary)";
+          e.currentTarget.style.borderColor = "transparent";
+        }}
+      >
+        <Trash2 size={13} />
+      </button>
+    </div>
+  );
+}
 
 export default function AppointmentsPage() {
   const router = useRouter();
   const { appointments, loading, deleteAppointment } = useAppointments();
+  const [search, setSearch] = useState("");
 
-  const handleDelete = async (id: string): Promise<void> => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this appointment?"
-    );
-
-    if (!confirmed) return;
-
-    const result = await deleteAppointment(id);
-    
-    if (!result.success) {
-      alert(result.error || "Failed to delete appointment");
-    }
-  };
+  const filtered = appointments.filter(
+    (a) =>
+      a.name.toLowerCase().includes(search.toLowerCase()) ||
+      a.email.toLowerCase().includes(search.toLowerCase()) ||
+      a.service.toLowerCase().includes(search.toLowerCase())
+  );
 
   if (loading) {
     return (
       <ProtectedRoute>
         <AdminLayout>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+            <div style={{
+              width: "20px", height: "20px",
+              border: "2px solid var(--border-strong)",
+              borderTopColor: "var(--accent)",
+              borderRadius: "50%",
+              animation: "spin 0.7s linear infinite",
+            }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         </AdminLayout>
       </ProtectedRoute>
@@ -39,141 +217,119 @@ export default function AppointmentsPage() {
   return (
     <ProtectedRoute>
       <AdminLayout>
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Appointments</h2>
-            <p className="text-gray-600 mt-1">Manage all your scheduled appointments</p>
-          </div>
-          <button
-            onClick={() => router.push("/appointments/new")}
-            className="btn-primary flex items-center gap-2"
-          >
-            <Plus size={20} />
-            New Appointment
-          </button>
-        </div>
+        <div style={{ maxWidth: "900px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-        {appointments.length === 0 ? (
-          <div className="card text-center py-12">
-            <Calendar className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No appointments yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Get started by creating your first appointment
-            </p>
-            <button
-              onClick={() => router.push("/appointments/new")}
-              className="btn-primary inline-flex items-center gap-2"
-            >
-              <Plus size={20} />
-              Create Appointment
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+                Appointments
+              </div>
+              <div style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "3px" }}>
+                {appointments.length} total booking{appointments.length !== 1 ? "s" : ""}
+              </div>
+            </div>
+            <button className="btn-primary" onClick={() => router.push("/appointments/new")}>
+              <Plus size={14} />
+              New Booking
             </button>
           </div>
-        ) : (
-          <div className="grid gap-4">
-            {appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="card hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="flex items-center justify-between">
-                  {/* Left side - Main info */}
-                  <div className="flex items-start gap-4 flex-1">
-                    {/* Avatar */}
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                      {appointment.name.charAt(0)}
-                    </div>
 
-                    {/* Details */}
-                    <div className="flex-1 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {/* Name & Email */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <User size={14} />
-                          <span>Client</span>
-                        </div>
-                        <div className="font-semibold text-gray-900">
-                          {appointment.name}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <Mail size={14} />
-                          {appointment.email}
-                        </div>
-                      </div>
-
-                      {/* Date */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <Calendar size={14} />
-                          <span>Date</span>
-                        </div>
-                        <div className="font-semibold text-gray-900">
-                          {new Date(appointment.date).toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Time */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <Clock size={14} />
-                          <span>Time</span>
-                        </div>
-                        <div className="font-semibold text-gray-900">
-                          {appointment.time}
-                        </div>
-                      </div>
-
-                      {/* Service */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <Briefcase size={14} />
-                          <span>Service</span>
-                        </div>
-                        <div>
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-                            {appointment.service}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right side - Actions */}
-                  <div className="flex items-center gap-2 ml-4">
-                    <button
-                      onClick={() => handleDelete(appointment.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                      title="Delete appointment"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Summary card */}
-        {appointments.length > 0 && (
-          <div className="mt-6 card bg-gradient-to-r from-blue-50 to-purple-50 border-blue-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Total Appointments</div>
-                <div className="text-3xl font-bold text-gray-900">
-                  {appointments.length}
-                </div>
-              </div>
-              <Calendar className="text-blue-600" size={48} />
+          {/* Search + filter bar */}
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              padding: "6px",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
+              borderRadius: "10px",
+            }}
+          >
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px", padding: "0 8px" }}>
+              <Search size={14} style={{ color: "var(--text-tertiary)", flexShrink: 0 }} />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name, email or service…"
+                style={{
+                  flex: 1,
+                  background: "none",
+                  border: "none",
+                  outline: "none",
+                  fontSize: "13px",
+                  color: "var(--text-primary)",
+                  caretColor: "var(--accent)",
+                }}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-tertiary)",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    padding: "2px 4px",
+                    borderRadius: "4px",
+                  }}
+                >
+                  ✕
+                </button>
+              )}
             </div>
+            <button className="btn-ghost">
+              <Filter size={13} />
+              Filter
+            </button>
           </div>
-        )}
+
+          {/* List */}
+          {filtered.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "60px 20px",
+                background: "var(--bg-card)",
+                borderRadius: "12px",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <Calendar size={32} style={{ color: "var(--text-tertiary)", margin: "0 auto 12px" }} />
+              <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                {search ? "No results found" : "No appointments yet"}
+              </div>
+              <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginBottom: "20px" }}>
+                {search ? `Try a different search term` : "Create your first booking to get started"}
+              </div>
+              {!search && (
+                <button className="btn-primary" onClick={() => router.push("/appointments/new")}>
+                  <Plus size={14} />
+                  New Booking
+                </button>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {filtered.map((appt) => (
+                <AppointmentCard
+                  key={appt.id}
+                  appointment={appt}
+                  onDelete={() => deleteAppointment(appt.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Footer count */}
+          {filtered.length > 0 && (
+            <div style={{ fontSize: "12px", color: "var(--text-tertiary)", textAlign: "center", paddingTop: "4px" }}>
+              Showing {filtered.length} of {appointments.length} appointments
+            </div>
+          )}
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
     </ProtectedRoute>
   );
