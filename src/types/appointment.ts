@@ -5,6 +5,10 @@ export interface Appointment {
   date: string;
   time: string;
   service: string;
+  status: "scheduled" | "completed" | "cancelled";
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Client {

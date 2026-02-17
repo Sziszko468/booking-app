@@ -40,30 +40,33 @@ class LocalStorageProvider {
     return appointments.find(a => a.id === id) || null;
   }
 
-  async create(data: Omit<Appointment, "id">): Promise<Appointment> {
+  async create(data: Omit<Appointment, "id" | "createdAt" | "updatedAt">): Promise<Appointment> {
     const appointments = await this.getAll();
-    
+
     const newAppointment: Appointment = {
       ...data,
+      status: data.status ?? "scheduled",
+      notes: data.notes ?? "",
       id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
-    
+
     const updated = [...appointments, newAppointment];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    
     return newAppointment;
   }
 
-  async update(id: string, data: Partial<Omit<Appointment, "id">>): Promise<Appointment | null> {
+  async update(id: string, data: Partial<Omit<Appointment, "id" | "createdAt">>): Promise<Appointment | null> {
     const appointments = await this.getAll();
     const index = appointments.findIndex(a => a.id === id);
-    
+
     if (index === -1) return null;
-    
+
     const updated = appointments.map((a) =>
-      a.id === id ? { ...a, ...data } : a
+      a.id === id ? { ...a, ...data, updatedAt: new Date().toISOString() } : a
     );
-    
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     return updated[index];
   }
