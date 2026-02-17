@@ -37,7 +37,6 @@ const links: NavLink[] = [
     href: "/clients",
     label: "Clients",
     icon: <Users size={16} />,
-    badge: "Soon",
   },
   {
     href: "/settings",

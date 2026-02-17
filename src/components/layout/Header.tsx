@@ -6,9 +6,10 @@ import { LogOut, Bell, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 const pageTitles: Record<string, { title: string; description: string }> = {
-  "/dashboard": { title: "Dashboard", description: "Overview & analytics" },
-  "/appointments": { title: "Appointments", description: "All scheduled bookings" },
-  "/appointments/new": { title: "New Booking", description: "Schedule an appointment" },
+  "/dashboard":        { title: "Dashboard",    description: "Overview & analytics" },
+  "/appointments":     { title: "Appointments", description: "All scheduled bookings" },
+  "/appointments/new": { title: "New Booking",  description: "Schedule an appointment" },
+  "/clients":          { title: "Clients",      description: "Client management" },
 };
 
 export default function Header() {

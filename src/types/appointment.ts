@@ -6,3 +6,13 @@ export interface Appointment {
   time: string;
   service: string;
 }
+
+export interface Client {
+  email: string;
+  name: string;
+  appointments: Appointment[];
+  totalAppointments: number;
+  lastAppointment: string | null;
+  firstAppointment: string | null;
+  topService: string | null;
+}
