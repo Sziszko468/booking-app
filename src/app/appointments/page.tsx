@@ -115,7 +115,7 @@ function AppointmentCard({
       </span>
 
       {/* Status */}
-      <div style={{
+      <div className="hide-mobile" style={{
         display: "flex", alignItems: "center", gap: "5px",
         padding: "3px 9px", borderRadius: "20px",
         background: `${status.color}10`,

@@ -257,7 +257,7 @@ export default function ClientsPage() {
           </div>
 
           {/* Summary cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
+          <div className="summary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
             {[
               { label: "Total clients",   value: clients.length },
               { label: "Total bookings",  value: totalBookings },

@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { logout } from "@/services/auth";
-import { LogOut, Bell, Sun, Moon } from "lucide-react";
+import { LogOut, Bell, Sun, Moon, Menu } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 const pageTitles: Record<string, { title: string; description: string }> = {
@@ -12,8 +12,8 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   "/clients":          { title: "Clients",      description: "Client management" },
 };
 
-export default function Header() {
-  const router = useRouter();
+export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
+  const router   = useRouter();
   const pathname = usePathname();
   const { theme, toggle } = useTheme();
 
@@ -39,6 +39,22 @@ export default function Header() {
     >
       {/* Page title */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Hamburger — mobile only */}
+        <button
+          onClick={onMenuClick}
+          className="menu-btn"
+          style={{
+            width: "32px", height: "32px", borderRadius: "8px",
+            border: "1px solid var(--border)", background: "transparent",
+            color: "var(--text-secondary)", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "all 0.12s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "var(--bg-card)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-secondary)"; }}
+        >
+          <Menu size={15} />
+        </button>
         <span
           style={{
             fontSize: "14px",

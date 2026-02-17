@@ -242,7 +242,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Stats grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+          <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
             <StatCard label="Total bookings" value={stats.total} delta="+12%" icon={Calendar} color="#5b7cf6" />
             <StatCard label="Today" value={stats.today} delta={`+${stats.today}`} icon={Clock} color="#a78bfa" />
             <StatCard label="This week" value={stats.thisWeek} delta="+8%" icon={TrendingUp} color="#22c55e" />
@@ -250,7 +250,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Main content */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "12px", alignItems: "start" }}>
+          <div className="main-grid" style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "12px", alignItems: "start" }}>
 
             {/* Upcoming appointments */}
             <div className="card" style={{ padding: 0, overflow: "hidden" }}>

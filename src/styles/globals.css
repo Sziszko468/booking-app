@@ -213,3 +213,32 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* ── Mobile responsive ───────────────────── */
+@media (max-width: 767px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .main-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .date-time-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .hide-mobile {
+    display: none !important;
+  }
+  .card {
+    padding: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+}
