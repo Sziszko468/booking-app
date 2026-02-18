@@ -6,8 +6,8 @@ type UseAppointmentsReturn = {
   appointments: Appointment[];
   loading: boolean;
   error: string | null;
-  createAppointment: (data: Omit<Appointment, "id">) => Promise<{ success: boolean; data?: Appointment; error?: string }>;
-  updateAppointment: (id: string, data: Partial<Omit<Appointment, "id">>) => Promise<{ success: boolean; data?: Appointment; error?: string }>;
+  createAppointment: (data: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => Promise<{ success: boolean; data?: Appointment; error?: string }>;
+  updateAppointment: (id: string, data: Partial<Omit<Appointment, "id" | "createdAt">>) => Promise<{ success: boolean; data?: Appointment; error?: string }>;
   deleteAppointment: (id: string) => Promise<{ success: boolean; error?: string }>;
   getAppointmentById: (id: string) => Appointment | null;
   refresh: () => void;
@@ -39,7 +39,7 @@ export const useAppointments = (): UseAppointmentsReturn => {
   }, [loadAppointments]);
 
   // Create appointment
-  const createAppointment = useCallback(async (data: Omit<Appointment, "id">): Promise<{ success: boolean; data?: Appointment; error?: string }> => {
+  const createAppointment = useCallback(async (data: Omit<Appointment, "id" | "createdAt" | "updatedAt">): Promise<{ success: boolean; data?: Appointment; error?: string }> => {
     try {
       const newAppointment = await appointmentService.createAppointment(data);
       setAppointments(prev => [...prev, newAppointment]);
@@ -51,7 +51,7 @@ export const useAppointments = (): UseAppointmentsReturn => {
   }, []);
 
   // Update appointment
-  const updateAppointment = useCallback(async (id: string, data: Partial<Omit<Appointment, "id">>): Promise<{ success: boolean; data?: Appointment; error?: string }> => {
+  const updateAppointment = useCallback(async (id: string, data: Partial<Omit<Appointment, "id" | "createdAt">>): Promise<{ success: boolean; data?: Appointment; error?: string }> => {
     try {
       const updated = await appointmentService.updateAppointment(id, data);
       if (updated) {

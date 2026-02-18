@@ -117,7 +117,7 @@ class ApiProvider {
     }
   }
 
-  async create(data: Omit<Appointment, "id">): Promise<Appointment> {
+  async create(data: Omit<Appointment, "id" | "createdAt" | "updatedAt">): Promise<Appointment> {
     try {
       const response = await api.post<{ data: Appointment }>(
         API_CONFIG.ENDPOINTS.APPOINTMENTS,
@@ -169,8 +169,8 @@ const provider = API_CONFIG.USE_API ? new ApiProvider() : new LocalStorageProvid
 // Core CRUD operations
 export const getAppointments = () => provider.getAll();
 export const getAppointmentById = (id: string) => provider.getById(id);
-export const createAppointment = (data: Omit<Appointment, "id">) => provider.create(data);
-export const updateAppointment = (id: string, data: Partial<Omit<Appointment, "id">>) => 
+export const createAppointment = (data: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => provider.create(data);
+export const updateAppointment = (id: string, data: Partial<Omit<Appointment, "id" | "createdAt">>) => 
   provider.update(id, data);
 export const deleteAppointment = (id: string) => provider.delete(id);
 

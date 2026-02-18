@@ -34,6 +34,8 @@ export default function NewAppointmentPage() {
       date:    fd.get("date") as string,
       time:    fd.get("time") as string,
       service: fd.get("service") as string,
+      status:  "scheduled" as const,
+      notes:   "",
     };
 
     if (!data.name || !data.email || !data.date || !data.time || !data.service) {

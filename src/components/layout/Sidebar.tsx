@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Calendar, Plus, Settings, Users, X } from "lucide-react";
 
 const links = [
-  { href: "/dashboard",        label: "Dashboard",   icon: <LayoutDashboard size={16} /> },
+  { href: "/dashboard",        label: "Dashboard",    icon: <LayoutDashboard size={16} /> },
   { href: "/appointments",     label: "Appointments", icon: <Calendar size={16} /> },
+  { href: "/calendar",         label: "Calendar",     icon: <Calendar size={16} /> },
   { href: "/appointments/new", label: "New Booking",  icon: <Plus size={16} /> },
   { href: "/clients",          label: "Clients",      icon: <Users size={16} /> },
   { href: "/settings",         label: "Settings",     icon: <Settings size={16} />, badge: "Soon" },

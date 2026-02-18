@@ -9,6 +9,7 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   "/dashboard":        { title: "Dashboard",    description: "Overview & analytics" },
   "/appointments":     { title: "Appointments", description: "All scheduled bookings" },
   "/appointments/new": { title: "New Booking",  description: "Schedule an appointment" },
+  "/calendar":         { title: "Calendar",     description: "Monthly view" },
   "/clients":          { title: "Clients",      description: "Client management" },
 };
 

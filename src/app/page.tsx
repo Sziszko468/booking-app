@@ -43,9 +43,14 @@ export default function HomePage() {
               BookingHub
             </span>
           </div>
-          <Link href="/login" className="btn-primary">
-            Get Started
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/book" className="btn-secondary">
+              Book Appointment
+            </Link>
+            <Link href="/login" className="btn-primary">
+              Admin Login
+            </Link>
+          </div>
         </div>
       </nav>
 
