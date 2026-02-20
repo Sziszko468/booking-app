@@ -10,7 +10,7 @@ const links = [
   { href: "/calendar",         label: "Calendar",     icon: <Calendar size={16} /> },
   { href: "/appointments/new", label: "New Booking",  icon: <Plus size={16} /> },
   { href: "/clients",          label: "Clients",      icon: <Users size={16} /> },
-  { href: "/settings",         label: "Settings",     icon: <Settings size={16} />, badge: "Soon" },
+  { href: "/settings/email",   label: "Settings",     icon: <Settings size={16} /> },
 ];
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {

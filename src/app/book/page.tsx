@@ -29,18 +29,63 @@ export default function PublicBookingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("🚀 Form submitted!");
+    console.log("📝 Form data:", formData);
+    
+    // Validate all fields
+    if (!formData.name || !formData.email || !formData.date || !formData.time || !formData.service) {
+      console.error("❌ Missing fields:", { 
+        name: !!formData.name, 
+        email: !!formData.email, 
+        date: !!formData.date, 
+        time: !!formData.time, 
+        service: !!formData.service 
+      });
+      setError("Please fill in all fields");
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
     try {
-      await appointmentService.createAppointment({
+      console.log("📞 Calling createAppointment...");
+      const newAppointment = await appointmentService.createAppointment({
         ...formData,
         status: "scheduled",
         notes: "Booked via public form",
       });
+      console.log("✅ Appointment created:", newAppointment);
+
+      // Send confirmation email
+      try {
+        console.log("📧 Sending confirmation email...");
+        const emailResponse = await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "confirmation",
+            appointment: newAppointment,
+          }),
+        });
+        console.log("📧 Email response status:", emailResponse.status);
+        if (emailResponse.ok) {
+          const emailResult = await emailResponse.json();
+          console.log("📧 Email result:", emailResult);
+        } else {
+          const errorText = await emailResponse.text();
+          console.error("📧 Email failed:", errorText);
+        }
+      } catch (emailError) {
+        console.error("❌ Failed to send confirmation email:", emailError);
+        // Don't block booking if email fails
+      }
+
+      console.log("✅ Setting success state...");
       setStep("success");
-    } catch (err) {
-      setError("Failed to book appointment. Please try again.");
+    } catch (error) {
+      console.error("❌ Booking error:", error);
+      setError(error instanceof Error ? error.message : "Failed to book appointment. Please try again.");
       setLoading(false);
     }
   };
