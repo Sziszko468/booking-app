@@ -4,7 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Calendar, Plus, Settings, Users, X } from "lucide-react";
 
-const links = [
+interface NavLink {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  badge?: string;
+}
+
+const links: NavLink[] = [
   { href: "/dashboard",        label: "Dashboard",    icon: <LayoutDashboard size={16} /> },
   { href: "/appointments",     label: "Appointments", icon: <Calendar size={16} /> },
   { href: "/calendar",         label: "Calendar",     icon: <Calendar size={16} /> },
