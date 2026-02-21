@@ -1,180 +1,233 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { useAppointments } from "@/hooks/useAppointments";
-import { Trash2, Calendar, Clock, User, Mail, Briefcase, Plus } from "lucide-react";
+import { login } from "@/services/auth";
+import { Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 
-export default function AppointmentsPage() {
+export default function LoginPage() {
   const router = useRouter();
-  const { appointments, loading, deleteAppointment } = useAppointments();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleDelete = async (id: string): Promise<void> => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this appointment?"
-    );
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    if (!confirmed) return;
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-    const result = await deleteAppointment(id);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const success = await login(email, password);
     
-    if (!result.success) {
-      alert(result.error || "Failed to delete appointment");
+    console.log("🔑 Login result:", success);
+    console.log("🔑 Token after login:", localStorage.getItem("token"));
+    
+    if (success) {
+      console.log("✅ Login successful, redirecting to dashboard...");
+      // Use window.location for more reliable redirect
+      window.location.href = "/dashboard";
+    } else {
+      console.log("❌ Login failed");
+      setError("Invalid email or password");
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <ProtectedRoute>
-        <AdminLayout>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        </AdminLayout>
-      </ProtectedRoute>
-    );
-  }
-
   return (
-    <ProtectedRoute>
-      <AdminLayout>
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Appointments</h2>
-            <p className="text-gray-600 mt-1">Manage all your scheduled appointments</p>
-          </div>
-          <button
-            onClick={() => router.push("/appointments/new")}
-            className="btn-primary flex items-center gap-2"
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "var(--bg-primary)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+      }}
+    >
+      {/* Subtle background glow */}
+      <div
+        style={{
+          position: "fixed",
+          top: "30%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "600px",
+          height: "600px",
+          background: "radial-gradient(circle, rgba(91,124,246,0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ width: "100%", maxWidth: "360px", position: "relative" }}>
+
+        {/* Logo */}
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <div
+            style={{
+              width: "44px",
+              height: "44px",
+              background: "var(--accent)",
+              borderRadius: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 14px",
+              boxShadow: "0 0 24px rgba(91,124,246,0.3)",
+            }}
           >
-            <Plus size={20} />
-            New Appointment
-          </button>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div style={{ fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+            BookingHub
+          </div>
+          <div style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px" }}>
+            Sign in to your account
+          </div>
         </div>
 
-        {appointments.length === 0 ? (
-          <div className="card text-center py-12">
-            <Calendar className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No appointments yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Get started by creating your first appointment
-            </p>
-            <button
-              onClick={() => router.push("/appointments/new")}
-              className="btn-primary inline-flex items-center gap-2"
-            >
-              <Plus size={20} />
-              Create Appointment
-            </button>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="card hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="flex items-center justify-between">
-                  {/* Left side - Main info */}
-                  <div className="flex items-start gap-4 flex-1">
-                    {/* Avatar */}
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                      {appointment.name.charAt(0)}
-                    </div>
+        {/* Card */}
+        <div
+          style={{
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+            borderRadius: "14px",
+            padding: "24px",
+          }}
+        >
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
 
-                    {/* Details */}
-                    <div className="flex-1 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {/* Name & Email */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <User size={14} />
-                          <span>Client</span>
-                        </div>
-                        <div className="font-semibold text-gray-900">
-                          {appointment.name}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <Mail size={14} />
-                          {appointment.email}
-                        </div>
-                      </div>
-
-                      {/* Date */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <Calendar size={14} />
-                          <span>Date</span>
-                        </div>
-                        <div className="font-semibold text-gray-900">
-                          {new Date(appointment.date).toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Time */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <Clock size={14} />
-                          <span>Time</span>
-                        </div>
-                        <div className="font-semibold text-gray-900">
-                          {appointment.time}
-                        </div>
-                      </div>
-
-                      {/* Service */}
-                      <div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-                          <Briefcase size={14} />
-                          <span>Service</span>
-                        </div>
-                        <div>
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-                            {appointment.service}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right side - Actions */}
-                  <div className="flex items-center gap-2 ml-4">
-                    <button
-                      onClick={() => handleDelete(appointment.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                      title="Delete appointment"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
+            {/* Email */}
+            <div>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                Email
+              </label>
+              <div style={{ position: "relative" }}>
+                <Mail
+                  size={14}
+                  style={{
+                    position: "absolute",
+                    left: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "var(--text-tertiary)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  defaultValue="admin@test.com"
+                  className="input-field"
+                  style={{ paddingLeft: "34px" }}
+                  placeholder="you@example.com"
+                />
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Summary card */}
-        {appointments.length > 0 && (
-          <div className="mt-6 card bg-gradient-to-r from-blue-50 to-purple-50 border-blue-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Total Appointments</div>
-                <div className="text-3xl font-bold text-gray-900">
-                  {appointments.length}
-                </div>
-              </div>
-              <Calendar className="text-blue-600" size={48} />
             </div>
-          </div>
-        )}
-      </AdminLayout>
-    </ProtectedRoute>
+
+            {/* Password */}
+            <div>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                Password
+              </label>
+              <div style={{ position: "relative" }}>
+                <Lock
+                  size={14}
+                  style={{
+                    position: "absolute",
+                    left: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "var(--text-tertiary)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  defaultValue="123456"
+                  className="input-field"
+                  style={{ paddingLeft: "34px" }}
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 12px",
+                  borderRadius: "8px",
+                  background: "rgba(239,68,68,0.08)",
+                  border: "1px solid rgba(239,68,68,0.18)",
+                  fontSize: "12px",
+                  color: "#f87171",
+                }}
+              >
+                <AlertCircle size={13} />
+                {error}
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary"
+              style={{ width: "100%", marginTop: "4px", height: "38px" }}
+            >
+              {loading ? (
+                <div
+                  style={{
+                    width: "14px",
+                    height: "14px",
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "#fff",
+                    borderRadius: "50%",
+                    animation: "spin 0.7s linear infinite",
+                  }}
+                />
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight size={14} />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Demo hint */}
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "10px 14px",
+            borderRadius: "8px",
+            background: "rgba(91,124,246,0.06)",
+            border: "1px solid rgba(91,124,246,0.12)",
+            fontSize: "12px",
+            color: "var(--text-secondary)",
+            textAlign: "center",
+          }}
+        >
+          Demo credentials are pre-filled · Just click Sign in
+        </div>
+      </div>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
   );
 }
