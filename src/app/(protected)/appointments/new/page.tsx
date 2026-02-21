@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
 import { useAppointments } from "@/hooks/useAppointments";
 import {
   User, Mail, Calendar, Clock, Briefcase,
@@ -47,6 +47,20 @@ export default function NewAppointmentPage() {
     const result = await createAppointment(data);
 
     if (result.success) {
+      // Send confirmation email
+      if (result.data) {
+        try {
+          await fetch("/api/email/confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(result.data),
+          });
+        } catch (err) {
+          console.error("Failed to send confirmation email:", err);
+          // Don't block on email failure
+        }
+      }
+
       setSuccess(true);
       setTimeout(() => router.push("/appointments"), 1500);
     } else {
@@ -59,8 +73,8 @@ export default function NewAppointmentPage() {
 
   if (success) {
     return (
-      <ProtectedRoute>
-        <AdminLayout>
+    <ProtectedRoute>
+      <AdminLayout>
           <div style={{ maxWidth: "480px", textAlign: "center", margin: "60px auto 0" }}>
             <div
               style={{
@@ -90,8 +104,8 @@ export default function NewAppointmentPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <AdminLayout>
+      <ProtectedRoute>
+        <AdminLayout>
         <div style={{ maxWidth: "520px" }}>
 
           {/* Header */}
@@ -258,6 +272,6 @@ export default function NewAppointmentPage() {
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
-    </ProtectedRoute>
-  );
+      </ProtectedRoute>
+    );
 }

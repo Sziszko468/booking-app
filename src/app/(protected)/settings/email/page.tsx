@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
 import { Mail, Send, Clock, CheckCircle, XCircle, Bell } from "lucide-react";
 
 export default function EmailSettingsPage() {
@@ -250,6 +250,6 @@ export default function EmailSettingsPage() {
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
-    </ProtectedRoute>
-  );
+      </ProtectedRoute>
+    );
 }

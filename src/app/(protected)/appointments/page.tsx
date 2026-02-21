@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
 import { useAppointments } from "@/hooks/useAppointments";
-import EditAppointmentModal from "../../components/appointments/EditAppointmentModal";
+import EditAppointmentModal from "@/components/appointments/EditAppointmentModal";
 import { Appointment } from "@/types/appointment";
 import { Trash2, Calendar, Plus, Search, Pencil, CheckCircle, Clock, XCircle } from "lucide-react";
 
@@ -183,18 +183,20 @@ export default function AppointmentsPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute><AdminLayout>
+    <ProtectedRoute>
+      <AdminLayout>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
           <div style={{ width: "20px", height: "20px", border: "2px solid var(--border-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
-      </AdminLayout></ProtectedRoute>
+      </AdminLayout>
+      </ProtectedRoute>
     );
   }
 
   return (
-    <ProtectedRoute>
-      <AdminLayout>
+      <ProtectedRoute>
+        <AdminLayout>
         <div style={{ maxWidth: "900px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* Header */}
@@ -301,6 +303,6 @@ export default function AppointmentsPage() {
 
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
-    </ProtectedRoute>
-  );
+      </ProtectedRoute>
+    );
 }

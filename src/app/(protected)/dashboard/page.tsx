@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
 import { useAppointmentStats } from "@/hooks/useAppointments";
 import * as appointmentService from "@/services/appointmentApi";
 import { Appointment } from "@/types/appointment";

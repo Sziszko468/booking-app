@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
 import { getClients } from "@/services/clientService";
 import { Client, Appointment } from "@/types/appointment";
 import { useAppointments } from "@/hooks/useAppointments";
-import EditAppointmentModal from "../../components/appointments/EditAppointmentModal";
+import EditAppointmentModal from "@/components/appointments/EditAppointmentModal";
 import {
   Search, Users, Calendar, ChevronDown, ChevronUp,
   Mail, Clock, Pencil, CheckCircle, XCircle,
@@ -225,8 +225,8 @@ export default function ClientsPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute>
-        <AdminLayout>
+    <ProtectedRoute>
+      <AdminLayout>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
             <div style={{ width: "20px", height: "20px", border: "2px solid var(--border-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -237,8 +237,8 @@ export default function ClientsPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <AdminLayout>
+      <ProtectedRoute>
+        <AdminLayout>
         <div style={{ maxWidth: "800px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* Header */}
@@ -330,6 +330,6 @@ export default function ClientsPage() {
 
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
-    </ProtectedRoute>
-  );
+      </ProtectedRoute>
+    );
 }

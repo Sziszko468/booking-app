@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminLayout from "@/components/layout/AdminLayout";
 import CalendarView from "@/components/calendar/CalendarView";
 import EditAppointmentModal from "@/components/appointments/EditAppointmentModal";
 import { useAppointments } from "@/hooks/useAppointments";
@@ -28,8 +28,8 @@ export default function CalendarPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute>
-        <AdminLayout>
+    <ProtectedRoute>
+      <AdminLayout>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
             <div style={{
               width: "20px", height: "20px",
@@ -46,8 +46,8 @@ export default function CalendarPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <AdminLayout>
+      <ProtectedRoute>
+        <AdminLayout>
         <div style={{ maxWidth: "1200px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* Header */}
@@ -102,6 +102,6 @@ export default function CalendarPage() {
 
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </AdminLayout>
-    </ProtectedRoute>
-  );
+      </ProtectedRoute>
+    );
 }
