@@ -13,20 +13,55 @@ export default function ProtectedRoute({ children }: Props) {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
+    // Use a flag to prevent state updates after unmount
+    let mounted = true;
+
     const checkAuth = () => {
-      if (!isAuthenticated()) {
+      const authenticated = isAuthenticated();
+      console.log("🔒 ProtectedRoute - Auth check:", authenticated);
+      console.log("🔒 localStorage token:", typeof window !== "undefined" ? localStorage.getItem("token") : "SSR");
+      
+      if (!authenticated) {
+        console.log("🔒 Not authenticated, redirecting to /login");
         router.replace("/login");
       } else {
-        setIsChecking(false);
+        console.log("🔒 Authenticated, rendering protected content");
+        if (mounted) {
+          setIsChecking(false);
+        }
       }
     };
 
-    checkAuth();
+    // Small delay to ensure client-side hydration
+    const timer = setTimeout(checkAuth, 0);
+
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+    };
   }, [router]);
 
-  // Show nothing while checking auth
+  // Show loading spinner while checking auth
   if (isChecking) {
-    return null;
+    return (
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "var(--bg-primary)",
+      }}>
+        <div style={{
+          width: "40px",
+          height: "40px",
+          border: "3px solid var(--border-strong)",
+          borderTopColor: "var(--accent)",
+          borderRadius: "50%",
+          animation: "spin 0.8s linear infinite",
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
   }
 
   return <>{children}</>;
