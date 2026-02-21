@@ -18,6 +18,7 @@ export default function ProtectedRoute({ children }: Props) {
 
     const checkAuth = () => {
       const authenticated = isAuthenticated();
+      console.log("🔒 ProtectedRoute - Path:", window.location.pathname);
       console.log("🔒 ProtectedRoute - Auth check:", authenticated);
       console.log("🔒 localStorage token:", typeof window !== "undefined" ? localStorage.getItem("token") : "SSR");
       
