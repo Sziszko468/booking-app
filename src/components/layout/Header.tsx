@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { logout } from "@/services/auth";
 import { LogOut, Bell, Sun, Moon, Menu } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const pageTitles: Record<string, { title: string; description: string }> = {
   "/dashboard":        { title: "Dashboard",    description: "Overview & analytics" },
@@ -11,6 +12,7 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   "/appointments/new": { title: "New Booking",  description: "Schedule an appointment" },
   "/calendar":         { title: "Calendar",     description: "Monthly view" },
   "/clients":          { title: "Clients",      description: "Client management" },
+  "/settings":         { title: "Settings",     description: "Email & notifications" },
 };
 
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
@@ -78,6 +80,9 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
       {/* Actions */}
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {/* Language switcher */}
+        <LanguageSwitcher />
+        
         {/* Theme toggle */}
         <button
           onClick={toggle}

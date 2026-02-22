@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Calendar, Plus, Settings, Users, X } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface NavLink {
   href: string;
@@ -11,17 +12,18 @@ interface NavLink {
   badge?: string;
 }
 
-const links: NavLink[] = [
-  { href: "/dashboard",        label: "Dashboard",    icon: <LayoutDashboard size={16} /> },
-  { href: "/appointments",     label: "Appointments", icon: <Calendar size={16} /> },
-  { href: "/calendar",         label: "Calendar",     icon: <Calendar size={16} /> },
-  { href: "/appointments/new", label: "New Booking",  icon: <Plus size={16} /> },
-  { href: "/clients",          label: "Clients",      icon: <Users size={16} /> },
-  { href: "/settings/email",   label: "Settings",     icon: <Settings size={16} /> },
-];
-
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const links: NavLink[] = [
+    { href: "/dashboard",        label: t("nav.dashboard"),    icon: <LayoutDashboard size={16} /> },
+    { href: "/appointments",     label: t("nav.appointments"), icon: <Calendar size={16} /> },
+    { href: "/calendar",         label: t("nav.calendar"),     icon: <Calendar size={16} /> },
+    { href: "/appointments/new", label: t("nav.newBooking"),   icon: <Plus size={16} /> },
+    { href: "/clients",          label: t("nav.clients"),      icon: <Users size={16} /> },
+    { href: "/settings/email",   label: t("nav.settings"),     icon: <Settings size={16} /> },
+  ];
 
   return (
     <aside style={{
