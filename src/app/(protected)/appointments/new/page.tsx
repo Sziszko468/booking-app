@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -106,7 +107,7 @@ export default function NewAppointmentPage() {
   return (
       <ProtectedRoute>
         <AdminLayout>
-        <div style={{ maxWidth: "520px" }}>
+        <div style={{ maxWidth: "520px", width: "100%", padding: "0 16px" }}>
 
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>

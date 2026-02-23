@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -30,6 +31,7 @@ export default function CalendarPage() {
     return (
     <ProtectedRoute>
       <AdminLayout>
+        <div style={{ width: "100%", maxWidth: "1100px", padding: "0 16px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
             <div style={{
               width: "20px", height: "20px",
@@ -40,7 +42,8 @@ export default function CalendarPage() {
             }} />
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
-        </AdminLayout>
+                </div>
+      </AdminLayout>
       </ProtectedRoute>
     );
   }
@@ -48,6 +51,7 @@ export default function CalendarPage() {
   return (
       <ProtectedRoute>
         <AdminLayout>
+        <div style={{ width: "100%", maxWidth: "1100px", padding: "0 16px" }}>
         <div style={{ maxWidth: "1200px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* Header */}
@@ -70,7 +74,7 @@ export default function CalendarPage() {
           <CalendarView
             appointments={appointments}
             onDateClick={handleDateClick}
-            onAppointmentClick={(appt) => setEditTarget(appt)}
+            onAppointmentClick={(appt: Appointment) => setEditTarget(appt)}
           />
 
           {/* Selected date info */}
@@ -101,6 +105,7 @@ export default function CalendarPage() {
         />
 
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              </div>
       </AdminLayout>
       </ProtectedRoute>
     );

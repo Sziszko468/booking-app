@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -18,6 +19,7 @@ const serviceColors: Record<string, string> = {
   "Assessment":      "#06b6d4",
 };
 
+// Status config - use translation keys
 const statusConfig = {
   scheduled:  { label: "Scheduled",  icon: Clock,        color: "#5b7cf6" },
   completed:  { label: "Completed",  icon: CheckCircle,  color: "#22c55e" },
@@ -223,7 +225,7 @@ export default function AppointmentsPage() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name, email or service…"
+                placeholder="appointments.search"
                 style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: "13px", color: "var(--text-primary)", caretColor: "var(--accent)" }}
               />
               {search && (
@@ -234,7 +236,7 @@ export default function AppointmentsPage() {
             {/* Status filter */}
             <div style={{ display: "flex", gap: "4px", padding: "4px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px" }}>
               {[
-                { value: "all",       label: "All" },
+                { value: "all",       label: "appointments.filter.all" },
                 { value: "scheduled", label: "Scheduled" },
                 { value: "completed", label: "Completed" },
                 { value: "cancelled", label: "Cancelled" },
@@ -263,10 +265,10 @@ export default function AppointmentsPage() {
             <div style={{ textAlign: "center", padding: "60px 20px", background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)" }}>
               <Calendar size={32} style={{ color: "var(--text-tertiary)", margin: "0 auto 12px" }} />
               <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                {search || filterStatus !== "all" ? "No results found" : "No appointments yet"}
+                {search || filterStatus !== "all" ? "appointments.noResults" : "appointments.empty"}
               </div>
               <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginBottom: "20px" }}>
-                {search || filterStatus !== "all" ? "Try adjusting your filters" : "Create your first booking to get started"}
+                {search || filterStatus !== "all" ? "appointments.noResultsDesc" : "appointments.emptyDesc"}
               </div>
               {!search && filterStatus === "all" && (
                 <button className="btn-primary" onClick={() => router.push("/appointments/new")}>

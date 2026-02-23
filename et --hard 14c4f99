@@ -1,0 +1,25 @@
+[33m999b88f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Adding Languages
+[33m14c4f99[m Login debug
+[33m238aac6[m Debug v1.0
+[33m5973123[m Bug fixes
+[33me05140d[m layout fixes
+[33m09c0efb[m Protected routes
+[33m97c2d62[m Build fixes
+[33mf06ec3c[m Fix auth
+[33m84c40b4[m Fix auth + add debug logging
+[33m40bad64[m Sidebar fix
+[33m1b7f379[m E-mail confirmation implement
+[33mdef34d2[m Add Calendar and Public Booking page
+[33m3d785e7[m Mobil look
+[33m2a2ed88[m Appointments editing option
+[33m9d0a2be[m Generate Clients page
+[33m44ab3cd[m Implement Dark Mode
+[33m94bd7fd[m Base Step end
+[33mf14da76[m Base Step 6  data persistence
+[33m5a4fe7c[m Base Step 4 dashboard
+[33m4d569e3[m Base Step 5 New appointment
+[33mc45fdf8[m Base Step 4 bux fixes , add tailwind
+[33m75e72ca[m Base Step 4
+[33m4749e9d[m Base Step 3
+[33m85451b5[m Base Step 2
+[33m90a7f95[m Base Step 1

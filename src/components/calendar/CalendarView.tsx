@@ -91,9 +91,9 @@ export default function CalendarView({ appointments, onDateClick, onAppointmentC
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%", overflow: "hidden" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
         <div style={{ fontSize: "18px", fontWeight: 600, color: "var(--text-primary)" }}>
           {MONTHS[currentMonth]} {currentYear}
         </div>
@@ -111,7 +111,7 @@ export default function CalendarView({ appointments, onDateClick, onAppointmentC
       </div>
 
       {/* Calendar grid */}
-      <div style={{
+      <div className="calendar-grid" style={{
         display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
         gap: "4px",
@@ -119,6 +119,7 @@ export default function CalendarView({ appointments, onDateClick, onAppointmentC
         padding: "12px",
         borderRadius: "10px",
         border: "1px solid var(--border)",
+        overflow: "hidden",
       }}>
         {/* Day headers */}
         {DAYS.map((day) => (
