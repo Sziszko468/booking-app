@@ -12,14 +12,22 @@ const ThemeContext = createContext<{
 export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark";
-    return (localStorage.getItem("theme") as Theme) ?? "dark";
-  });
+  const [theme, setTheme] = useState<Theme>("dark");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+    setMounted(true);
+    const storedTheme = localStorage.getItem("theme") as Theme;
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }, [theme, mounted]);
 
   const toggle = () => {
     setTheme((prev) => {
@@ -29,6 +37,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // Provide a default value during SSR to avoid hydration mismatch
   return (
     <ThemeContext.Provider value={{ theme, toggle }}>
       {children}
